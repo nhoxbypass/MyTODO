@@ -2,11 +2,12 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorMainBackground">#F5F5F5</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorPriorityL1">#4CAF50</color>
     <color name="colorPriorityL2">#FB8C00</color>
     <color name="colorPriorityL3">#F44336</color>
-    <color name="colorText">#000000</color>
-    <color name="fab1_color">#4CAF50</color>
+    <color name="colorText">#212121</color>
+    <color name="fab1_color">#66BB6A</color>
     <color name="fab2_color">#2196F3</color>
 </resources>

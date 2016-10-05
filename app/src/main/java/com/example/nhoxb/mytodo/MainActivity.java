@@ -1,10 +1,12 @@
 package com.example.nhoxb.mytodo;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -42,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     List<ItemModel> listItem;
-    public  static ArrayAdapter categoryAdapter;
+    public static ArrayAdapter categoryAdapter;
     MyItemAdapter listItemAdapter;
     static final int EDIT_ITEM_REQUEST = 1;
     DBHelper dbHelper;
@@ -52,6 +55,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*
+        if (Build.VERSION.SDK_INT < 16) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        else
+        {
+            View decorView = getWindow().getDecorView();
+            // Hide the status bar.
+            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+            // Remember that you should never show the action bar if the
+            // status bar is hidden, so hide that too if necessary.
+            ActionBar actionBar = getActionBar();
+            if (actionBar!= null) {
+                actionBar.hide();
+            }
+        }
+        */
         setContentView(R.layout.activity_main);
 
 
@@ -80,11 +104,16 @@ public class MainActivity extends AppCompatActivity {
         categoryAdapter.add("Relax");
 
 
+        RecyclerView.ItemDecoration itemDecoration = new
+                DividerItemDecoration(MainActivity.this);
+        recyclerView.addItemDecoration(itemDecoration);
 
-
-        //Load du lieu tu db
-        dbHelper = new DBHelper(getApplicationContext());
-        listItem = dbHelper.dbInitialize();
+        //Lay du lieu tu intent
+        Bundle extras = getIntent().getExtras();
+        listItem = (List<ItemModel>)extras.getSerializable("LIST_ITEM");
+        dbHelper = DBHelper.getDBHelperInstance(MainActivity.this);
+        //dbHelper = new DBHelper(getApplicationContext());
+        //listItem = dbHelper.dbInitialize();
         listItemAdapter = new MyItemAdapter(this,listItem);
         recyclerView.setAdapter(listItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -95,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
+                /*
                 Intent intent = new Intent(getApplicationContext(),EditItemActivity.class);
 
                 Bundle bundle = new Bundle();
@@ -103,10 +133,12 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("EDIT_ITEM_INDEX",position);
                 startActivityForResult(intent,EDIT_ITEM_REQUEST);
                 editItemIndex = position;
+                */
             }
 
             @Override
             public void onLongItemClick(View view, final int position) {
+            /*
                 final ItemModel itemModel = listItem.get(position);
 
                 new AlertDialog.Builder(MainActivity.this)
@@ -127,7 +159,9 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
+                        */
             }
+
         }));
 
         fabAction.setOnClickListener(new View.OnClickListener() {

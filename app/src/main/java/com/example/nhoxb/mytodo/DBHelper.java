@@ -10,13 +10,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by nhoxb on 9/29/2016.
  */
-public class DBHelper extends SQLiteOpenHelper{
+public class DBHelper extends SQLiteOpenHelper implements Serializable{
 
     public static final String DATABASE_NAME = "MyTODODatabase.db";
     public static final String TABLE_NAME = "items";
@@ -30,21 +31,30 @@ public class DBHelper extends SQLiteOpenHelper{
     private static final String KEY_MONTH = "month";
     private static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("+ KEY_ID +" INTEGER," + KEY_NAME +" VARCHAR,"+ KEY_CATEGORY +" VARCHAR,"+ KEY_PRIORITY +" INTEGER,"+ KEY_HOUR +" INTEGER,"+ KEY_DAY +" INTEGER,"+ KEY_MONTH +" INTEGER);";
 
-
+    //Singleton pattern
+    private static DBHelper sHelperInstance;
 
     //For upgrate database when structure change
     public static int DATA_VERSION = 1;
     private SQLiteDatabase db;
-    private Context mContext;
 
-    public DBHelper(Context context)
+    public static synchronized DBHelper  getDBHelperInstance(Context context)
+    {
+        if (sHelperInstance == null)
+        {
+            sHelperInstance = new DBHelper(context.getApplicationContext());
+        }
+
+        return sHelperInstance;
+    }
+
+    private DBHelper(Context context)
     {
         super(context, DATABASE_NAME , null, 1);
-        mContext = context;
     }
 
 
-    public DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
+    private DBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
     }
 
@@ -52,7 +62,7 @@ public class DBHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         db = sqLiteDatabase;
         sqLiteDatabase.execSQL(DB_CREATE);
-        Toast.makeText(mContext,DB_CREATE,Toast.LENGTH_LONG).show();
+        //Toast.makeText(mContext,DB_CREATE,Toast.LENGTH_LONG).show();
     }
 
     public Cursor query(String sql) {

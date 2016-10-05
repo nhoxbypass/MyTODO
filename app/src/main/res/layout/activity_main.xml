@@ -9,14 +9,29 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorMainBackground"
     tools:context="com.example.nhoxb.mytodo.MainActivity"
     xmlns:tools="http://schemas.android.com/tools">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorText"
+        android:text="TO DO"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/black"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:transcriptMode="alwaysScroll"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="32dp"
         android:id="@+id/list_item"/>
 
@@ -31,7 +46,6 @@
         android:layout_marginBottom="140dp"
         android:elevation="6dp"
         app:fabSize="normal"
-        android:src="@android:drawable/ic_input_add"
         app:layout_anchorGravity="bottom|right|end"
         app:pressedTranslationZ="12dp"
         app:backgroundTint="@color/fab2_color"
@@ -48,10 +62,10 @@
         android:layout_marginBottom="80dp"
         android:elevation="6dp"
         app:fabSize="normal"
-        android:src="@android:drawable/ic_input_add"
+        android:src="@drawable/ic_note_white"
         app:layout_anchorGravity="bottom|right|end"
         app:pressedTranslationZ="12dp"
-        app:backgroundTint="@color/fab1_color"
+        app:backgroundTint="@color/colorPrimary"
         />
 
     <android.support.design.widget.FloatingActionButton
@@ -61,7 +75,8 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         app:fabSize="normal"
-        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="@color/colorAccent"
+        android:src="@drawable/plus"
         app:layout_anchor="@id/list_item"
         app:pressedTranslationZ="12dp"
         android:elevation="6dp"

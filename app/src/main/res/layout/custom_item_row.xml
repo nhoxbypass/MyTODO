@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginRight="16dp"
     android:layout_marginLeft="16dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:background="?android:attr/selectableItemBackground"
+    tools:background="@drawable/recycler_item_ripple"
     >
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:textSize="16sp"
         android:textColor="@color/colorText"
-        android:layout_weight="1"
         android:text="NAME"
         />
 
     <TextView
         android:id="@+id/item_date"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:textColor="@color/colorText"
         android:textSize="16sp"
-        android:layout_weight="1"
         android:textAlignment="viewEnd"
         android:text="DATE"
         />
-</LinearLayout>
+</RelativeLayout>
