@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_margin="8dp"
+    android:paddingTop="8dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#ffffffff">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:layout_alignParentTop="true"
+        android:textAllCaps="true"
+        android:textColor="@color/colorText"
+        android:text="ADD NOTE"
+        android:textSize="16sp"
+        android:gravity="center_horizontal"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/title"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/line"
+        android:background="@android:color/black"/>
+
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/line"
         android:layout_margin="8dp"
         android:id="@+id/category_selector"/>
     <LinearLayout
@@ -60,26 +83,33 @@
         </LinearLayout>
     </LinearLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/text_input_layout"
+        android:layout_width="match_parent"
+        android:layout_below="@id/contentPanel"
+        android:layout_height="wrap_content">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Input..."
-        android:id="@+id/jobNameInput"
-        android:layout_below="@id/contentPanel"
+        android:id="@+id/description_input"
         android:layout_margin="8dp"
         android:textSize="18sp"
+        android:inputType="textCapSentences"
+        android:imeOptions="actionDone"
         android:textColor="#ff000000"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:text="OK"
         android:id="@+id/btn_dialog"
         android:gravity="center_vertical|center_horizontal"
-        android:layout_below="@id/jobNameInput"
-        android:layout_marginBottom="20dp"
+        android:layout_below="@id/text_input_layout"
+        android:layout_marginBottom="16dp"
         android:layout_centerHorizontal="true"
         android:textColor="#ffffffff" />
 

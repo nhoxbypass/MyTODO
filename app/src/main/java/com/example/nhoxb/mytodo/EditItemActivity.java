@@ -12,12 +12,14 @@ import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class EditItemActivity extends AppCompatActivity {
 
+    TextView tvTitle;
     Spinner categorySelector;
-    EditText nameInputField;
+    EditText descriptionInput;
     NumberPicker picker1, picker2, picker3;
     RadioGroup radioGroup;
     RadioButton checkedButton;
@@ -46,7 +48,7 @@ public class EditItemActivity extends AppCompatActivity {
                     //Edit
                     action = 1;
                     Toast.makeText(getApplicationContext(),"edit",Toast.LENGTH_SHORT).show();
-                    nameInputField.setEnabled(true);
+                    descriptionInput.setEnabled(true);
                     picker1.setEnabled(true);
                     picker2.setEnabled(true);
                     picker3.setEnabled(true);
@@ -59,7 +61,7 @@ public class EditItemActivity extends AppCompatActivity {
                 else if(action == 1)
                 {
                     //Save
-                    item.mName = nameInputField.getText().toString();
+                    item.mDescription = descriptionInput.getText().toString();
                     item.mCategory = categorySelector.getSelectedItem().toString();
                     checkedButton = (RadioButton)findViewById(radioGroup.getCheckedRadioButtonId());
                     item.mPriorityLevel = radioGroup.indexOfChild(checkedButton);
@@ -83,7 +85,8 @@ public class EditItemActivity extends AppCompatActivity {
 
     void initContent()
     {
-        nameInputField = (EditText)findViewById(R.id.edit_name_input);
+        tvTitle = (TextView)findViewById(R.id.title);
+        descriptionInput = (EditText)findViewById(R.id.edit_description_input);
         picker1 = (NumberPicker)findViewById(R.id.edit_hour_picker);
         picker2  = (NumberPicker)findViewById(R.id.edit_day_picker);
         picker3  = (NumberPicker)findViewById(R.id.edit_month_picker);
@@ -107,7 +110,8 @@ public class EditItemActivity extends AppCompatActivity {
         editItemIndex = intent.getIntExtra("EDIT_ITEM_INDEX",0);
         bundle = intent.getExtras();
         item = (ItemModel) bundle.getSerializable("EDIT_ITEM");
-        nameInputField.setText(item.mName);
+        descriptionInput.setText(item.mDescription);
+        tvTitle.setText(item.mName);
         picker1.setValue(item.mHour);
         picker2.setValue(item.mDay);
         picker3.setValue(item.mMonth);
@@ -117,7 +121,7 @@ public class EditItemActivity extends AppCompatActivity {
 
 
         action = 0;
-        nameInputField.setEnabled(false);
+        descriptionInput.setEnabled(false);
         picker1.setEnabled(false);
         picker2.setEnabled(false);
         picker3.setEnabled(false);

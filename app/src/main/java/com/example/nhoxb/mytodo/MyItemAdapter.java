@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -60,6 +61,27 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.ViewHolder
         TextView dateTV = holder.dateTextView;
         dateTV.setText(itemModel.mDay + "/" + itemModel.mMonth);
 
+        ImageView imageView = holder.imageView;
+
+        switch (itemModel.mCategory)
+        {
+            case "Study":
+                imageView.setImageResource(R.drawable.ic_study);
+                break;
+
+            case "Business":
+                imageView.setImageResource(R.drawable.ic_business);
+                break;
+
+            case "Workout":
+                imageView.setImageResource(R.drawable.ic_workout);
+                break;
+
+            case "Relax":
+                imageView.setImageResource(R.drawable.ic_relax);
+                break;
+        }
+
         //Set color
         int colorId = R.color.colorPriorityL1;
         if (itemModel.mPriorityLevel == 0)
@@ -87,6 +109,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.ViewHolder
         // for any view that will be set as you render a row
         public TextView nameTextView;
         public TextView dateTextView;
+        public ImageView imageView;
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -96,6 +119,7 @@ public class MyItemAdapter extends RecyclerView.Adapter<MyItemAdapter.ViewHolder
             super(itemView);
             nameTextView = (TextView) itemView.findViewById(R.id.item_name);
             dateTextView = (TextView) itemView.findViewById(R.id.item_date);
+            imageView = (ImageView)itemView.findViewById(R.id.imgView);
         }
     }
 }

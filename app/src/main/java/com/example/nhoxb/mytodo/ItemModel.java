@@ -6,8 +6,9 @@ import java.util.Date;
 /**
  * Created by nhoxb on 9/28/2016.
  */
-public class ItemModel implements Serializable{
+public class ItemModel implements Serializable {
     public String mName;
+    public String mDescription;
     public int mPriorityLevel;
     public int mHour;
     public int mDay;
@@ -27,9 +28,10 @@ public class ItemModel implements Serializable{
         mCategory = "Studying";
     }
 
-    public ItemModel(String name, int priorityLevel, int hour, int day, int month, String category)
+    public ItemModel(String name, String description, int priorityLevel, int hour, int day, int month, String category)
     {
         mName = name;
+        mDescription = description;
         mPriorityLevel = priorityLevel;
         mHour = hour;
         mDay = day;
@@ -46,7 +48,6 @@ public class ItemModel implements Serializable{
 
     void updateDatabase(DBHelper dbHelper)
     {
-
         dbHelper.updateItem(mId,this);
     }
 
@@ -60,3 +61,5 @@ public class ItemModel implements Serializable{
         dbHelper.deleteItem(mId);
     }
 }
+
+

@@ -24,12 +24,13 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
 
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
+    private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_CATEGORY = "category";
     private static final String KEY_PRIORITY = "priority";
     private static final String KEY_HOUR = "hour";
     private static final String KEY_DAY = "day";
     private static final String KEY_MONTH = "month";
-    private static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("+ KEY_ID +" INTEGER," + KEY_NAME +" VARCHAR,"+ KEY_CATEGORY +" VARCHAR,"+ KEY_PRIORITY +" INTEGER,"+ KEY_HOUR +" INTEGER,"+ KEY_DAY +" INTEGER,"+ KEY_MONTH +" INTEGER);";
+    private static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("+ KEY_ID +" INTEGER," + KEY_NAME +" VARCHAR, " + KEY_DESCRIPTION + " VARCHAR, "+ KEY_CATEGORY +" VARCHAR,"+ KEY_PRIORITY +" INTEGER,"+ KEY_HOUR +" INTEGER,"+ KEY_DAY +" INTEGER,"+ KEY_MONTH +" INTEGER);";
 
     //Singleton pattern
     private static DBHelper sHelperInstance;
@@ -100,7 +101,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
         return id;
     }
 
-    public boolean insertItem  (int id, String name, String category, int priority, int hour,int day, int month)
+    public boolean insertItem  (int id, String name, String description, String category, int priority, int hour,int day, int month)
     {
 
         /*db.execSQL("INSERT INTO items VALUES('"+name+"','"+
@@ -110,6 +111,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ID, id);
         contentValues.put(KEY_NAME, name);
+        contentValues.put(KEY_DESCRIPTION,description);
         contentValues.put(KEY_CATEGORY, category);
         contentValues.put(KEY_PRIORITY, priority);
         contentValues.put(KEY_HOUR, hour);
@@ -128,6 +130,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ID, id);
         contentValues.put(KEY_NAME, itemModel.mName);
+        contentValues.put(KEY_DESCRIPTION,itemModel.mDescription);
         contentValues.put(KEY_CATEGORY, itemModel.mCategory);
         contentValues.put(KEY_PRIORITY, itemModel.mPriorityLevel);
         contentValues.put(KEY_HOUR, itemModel.mHour);
@@ -158,6 +161,7 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ID, keyId);
         contentValues.put(KEY_NAME, itemModel.mName);
+        contentValues.put(KEY_DESCRIPTION,itemModel.mDescription);
         contentValues.put(KEY_CATEGORY, itemModel.mCategory);
         contentValues.put(KEY_PRIORITY, itemModel.mPriorityLevel);
         contentValues.put(KEY_HOUR, itemModel.mHour);
@@ -213,11 +217,12 @@ public class DBHelper extends SQLiteOpenHelper implements Serializable{
 
             itemModel.setId(c.getInt(0));
             itemModel.mName = c.getString(1);
-            itemModel.mCategory = c.getString(2);
-            itemModel.mPriorityLevel = c.getInt(3);
-            itemModel.mHour = c.getInt(4);
-            itemModel.mDay = c.getInt(5);
-            itemModel.mMonth = c.getInt(6);
+            itemModel.mDescription = c.getString(2);
+            itemModel.mCategory = c.getString(3);
+            itemModel.mPriorityLevel = c.getInt(4);
+            itemModel.mHour = c.getInt(5);
+            itemModel.mDay = c.getInt(6);
+            itemModel.mMonth = c.getInt(7);
 
             return  itemModel;
         }

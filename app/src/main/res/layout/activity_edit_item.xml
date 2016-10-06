@@ -9,12 +9,69 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     tools:context="com.example.nhoxb.mytodo.EditItemActivity">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:textAllCaps="true"
+        android:textColor="@color/colorText"
+        android:text="TO DO"
+        android:textSize="24sp"
+        android:gravity="center_horizontal"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/black"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textColor="@color/colorText"
+        android:text="Category"
+        android:textSize="12sp"
+        android:gravity="center_horizontal"/>
 
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:id="@+id/edit_category_selector"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@color/colorText"
+            android:layout_gravity="center"
+            android:text="Priority"
+            android:textSize="12sp"
+            android:gravity="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:textColor="@color/colorText"
+            android:text="Time/Date"
+            android:textSize="12sp"
+            android:gravity="center"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@android:color/black"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,7 +124,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Input..."
-        android:id="@+id/edit_name_input"
+        android:id="@+id/edit_description_input"
+        android:inputType="textCapWords"
+        android:imeOptions="actionDone"
         android:layout_margin="8dp"
         android:textSize="18sp"
         android:textColor="#ff000000"
@@ -75,7 +134,7 @@
         android:gravity="center_horizontal" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/edit_save_btn"
         android:text="Edit"

@@ -1,39 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginRight="16dp"
-    android:layout_marginLeft="16dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp"
+    android:padding="16dp"
+    android:theme="@style/AppTheme"
+    android:orientation="horizontal"
     android:background="?android:attr/selectableItemBackground"
-    tools:background="@drawable/recycler_item_ripple"
+    android:clickable="true"
     >
 
     <TextView
         android:id="@+id/item_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="2"
+        android:clickable="false"
         android:textSize="16sp"
         android:textColor="@color/colorText"
         android:text="NAME"
         />
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:scaleType="fitEnd"
+        android:layout_weight="1"
+        android:src="@drawable/ic_add_black_36dp"
+        android:id="@+id/imgView"
+       />
 
     <TextView
         android:id="@+id/item_date"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_gravity="center_vertical"
+        android:gravity="left"
+        android:layout_weight="1"
         android:textColor="@color/colorText"
+        android:clickable="false"
         android:textSize="16sp"
-        android:textAlignment="viewEnd"
+        android:textAlignment="textEnd"
         android:text="DATE"
         />
-</RelativeLayout>
+</LinearLayout>

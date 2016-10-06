@@ -4,16 +4,20 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.ButtonBarLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -116,7 +120,10 @@ public class MainActivity extends AppCompatActivity {
         //listItem = dbHelper.dbInitialize();
         listItemAdapter = new MyItemAdapter(this,listItem);
         recyclerView.setAdapter(listItemAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        final LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+        //llm.setReverseLayout(true);
+        //llm.setStackFromEnd(true);
+        recyclerView.setLayoutManager(llm);
 
 
 
@@ -124,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, recyclerView, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                /*
+
                 Intent intent = new Intent(getApplicationContext(),EditItemActivity.class);
 
                 Bundle bundle = new Bundle();
@@ -133,17 +140,17 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("EDIT_ITEM_INDEX",position);
                 startActivityForResult(intent,EDIT_ITEM_REQUEST);
                 editItemIndex = position;
-                */
+
             }
 
             @Override
             public void onLongItemClick(View view, final int position) {
-            /*
+
                 final ItemModel itemModel = listItem.get(position);
 
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Delete item?")
-                        .setMessage("Are you sure you want to delete" + itemModel.mName + "?")
+                        .setMessage("Are you sure you want to delete '" + itemModel.mName + "'?")
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
@@ -159,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-                        */
+
             }
 
         }));
@@ -237,10 +244,10 @@ public class MainActivity extends AppCompatActivity {
         isFabOpen = false;
     }
 
-
     public class ViewDialog {
 
         String mName;
+        String mDescription;
         int mPriorityLevel;
         int mHour;
         int mDay;
@@ -248,12 +255,12 @@ public class MainActivity extends AppCompatActivity {
         String mCategory;
         Button dialogButton;
         Spinner categorySelector;
-        EditText nameInputField;
+        EditText descriptionInput;
         NumberPicker picker1, picker2, picker3;
         RadioGroup radioGroup;
         RadioButton checkedButton;
 
-        public void showDialog(Activity activity){
+        public void showDialog(final Activity activity){
             final Dialog dialog = new Dialog(activity);
 
             dialogContentInit(dialog);
@@ -261,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mName = nameInputField.getText().toString();
+                    mDescription = descriptionInput.getText().toString();
                     checkedButton = (RadioButton) radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
                     mPriorityLevel = radioGroup.indexOfChild(checkedButton);
                     mHour = picker1.getValue();
@@ -269,16 +276,8 @@ public class MainActivity extends AppCompatActivity {
                     mMonth = picker3.getValue();
                     mCategory = categorySelector.getSelectedItem().toString();
 
-                    ItemModel item = new ItemModel(mName,mPriorityLevel,mHour,mDay,mMonth, mCategory);
-
-
-                    item.addToDatabase(dbHelper);
-                    listItem.add(item);
-                    listItemAdapter.notifyDataSetChanged();
-
-                    Toast.makeText(getApplicationContext(),dbHelper.getSize() + " " + listItemAdapter.getItemCount() + " " + listItem.size(),Toast.LENGTH_LONG).show();
-
-                    dialog.dismiss();
+                    TitleInputDialog titleDialog = new TitleInputDialog(activity,dialog,dbHelper,listItem,listItemAdapter);
+                    titleDialog.showDialog(mDescription,mPriorityLevel,mHour,mDay,mMonth,mCategory);
                 }
             });
 
@@ -292,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.setCancelable(false);
             dialog.setContentView(R.layout.add_todo_dialog);
 
-            nameInputField = (EditText)dialog.findViewById(R.id.jobNameInput);
+            descriptionInput = (EditText)dialog.findViewById(R.id.description_input);
             picker1 = (NumberPicker)dialog.findViewById(R.id.number_picker_1);
             picker2  = (NumberPicker)dialog.findViewById(R.id.number_picker_2);
             picker3  = (NumberPicker)dialog.findViewById(R.id.number_picker_3);
@@ -313,6 +312,97 @@ public class MainActivity extends AppCompatActivity {
             picker3.setMinValue(1);
             picker3.setMaxValue(12);
         }
+    }
+}
+
+
+
+class TitleInputDialog
+{
+    Activity mActivity;
+    EditText inputField;
+    Button btnYes, btnNo;
+    Dialog dialog;
+
+    //
+    DBHelper mHelper;
+    List<ItemModel> mListItem;
+    MyItemAdapter mListItemAdapter;
+
+    //
+    String mName;
+    String mDescription;
+    int mPriorityLevel;
+    int mHour;
+    int mDay;
+    int mMonth;
+    String mCategory;
+
+    public TitleInputDialog(final Activity activity, final Dialog itemDialog, DBHelper dbHelper, List<ItemModel> listItem, MyItemAdapter listItemAdapter)
+    {
+        mActivity = activity;
+        mHelper = dbHelper;
+        mListItem = listItem;
+        mListItemAdapter = listItemAdapter;
+        initDialog();
+
+        btnYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemDialog.dismiss();
+                mName = inputField.getText().toString();
+                ItemModel item = new ItemModel(mName, mDescription,mPriorityLevel,mHour,mDay,mMonth, mCategory);
+
+
+                item.addToDatabase(mHelper);
+                mListItem.add(item);
+                mListItemAdapter.notifyDataSetChanged();
+
+                Toast.makeText(activity.getApplicationContext(),mHelper.getSize() + " " + mListItemAdapter.getItemCount() + " " + mListItem.size(),Toast.LENGTH_LONG).show();
+
+                dialog.dismiss();
+            }
+        });
+
+        btnNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+
+    }
+
+    public TitleInputDialog(Activity activity)
+    {
+        mActivity = activity;
+        initDialog();
+    }
+
+    public void showDialog(String description, int priorityLevel, int hour, int day, int month, String category)
+    {
+        mDescription = description;
+        mPriorityLevel = priorityLevel;
+        mHour = hour;
+        mDay = day;
+        mMonth = month;
+        mCategory = category;
+
+        dialog.show();
+    }
+
+    private void initDialog()
+    {
+        dialog = new Dialog(mActivity);
+
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.title_input_dialog);
+
+        inputField = (EditText)dialog.findViewById(R.id.input);
+        btnYes = (Button)dialog.findViewById(R.id.btn_dialog_yes);
+        btnNo = (Button)dialog.findViewById(R.id.btn_dialog_no);
     }
 }
 
