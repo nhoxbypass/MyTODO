@@ -1,9 +1,8 @@
-package com.example.nhoxb.mytodo;
+package com.example.nhoxb.mytodo.ui.edit;
 
-import android.content.ClipData;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -13,9 +12,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.nhoxb.mytodo.R;
+import com.example.nhoxb.mytodo.data.model.Item;
+import com.example.nhoxb.mytodo.ui.main.MainActivity;
+import com.example.nhoxb.mytodo.utils.DataUtils;
 
 public class EditItemActivity extends AppCompatActivity {
+
+    public static final String KEY_RESULT_ITEM = "RESULT_ITEM";
+    static final int ACTION_VIEW = 0;
+    static final int ACTION_EDIT = 1;
 
     TextView tvTitle;
     Spinner categorySelector;
@@ -29,25 +36,25 @@ public class EditItemActivity extends AppCompatActivity {
     Intent intent;
     int editItemIndex;
     int action; // 0: view, 1: edit
-    ItemModel item;
+    Item item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_item);
 
-        initContent();
+        categoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categoryAdapter.addAll(DataUtils.getDefaultCategoryList());
 
+        initUi();
 
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (action == 0)
-                {
+                if (action == ACTION_VIEW) {
                     //Edit
-                    action = 1;
-                    Toast.makeText(getApplicationContext(),"edit",Toast.LENGTH_SHORT).show();
+                    action = ACTION_EDIT;
                     descriptionInput.setEnabled(true);
                     picker1.setEnabled(true);
                     picker2.setEnabled(true);
@@ -56,45 +63,40 @@ public class EditItemActivity extends AppCompatActivity {
                     for (int i = 0; i < radioGroup.getChildCount(); i++) {
                         radioGroup.getChildAt(i).setEnabled(true);
                     }
-                    btnAction.setText("SAVE");
-                }
-                else if(action == 1)
-                {
+                    btnAction.setText(R.string.save);
+                } else if (action == ACTION_EDIT) {
                     //Save
                     item.mDescription = descriptionInput.getText().toString();
                     item.mCategory = categorySelector.getSelectedItem().toString();
-                    checkedButton = (RadioButton)findViewById(radioGroup.getCheckedRadioButtonId());
+                    checkedButton = findViewById(radioGroup.getCheckedRadioButtonId());
                     item.mPriorityLevel = radioGroup.indexOfChild(checkedButton);
                     item.mHour = picker1.getValue();
                     item.mDay = picker2.getValue();
-                    item.mMonth  = picker3.getValue();
-                    bundle.putSerializable("RESULT_ITEM",item);
+                    item.mMonth = picker3.getValue();
+                    bundle.putSerializable(KEY_RESULT_ITEM, item);
                     intent.putExtras(bundle);
-                    setResult(RESULT_OK,intent);
-                    btnAction.setText("EDIT");
+                    setResult(RESULT_OK, intent);
+                    btnAction.setText(R.string.edit);
                     finish();
-                }
-                else
-                {
-
+                } else {
+                    // Unknown action
                 }
             }
         });
 
     }
 
-    void initContent()
-    {
-        tvTitle = (TextView)findViewById(R.id.title);
-        descriptionInput = (EditText)findViewById(R.id.edit_description_input);
-        picker1 = (NumberPicker)findViewById(R.id.edit_hour_picker);
-        picker2  = (NumberPicker)findViewById(R.id.edit_day_picker);
-        picker3  = (NumberPicker)findViewById(R.id.edit_month_picker);
-        categorySelector = (Spinner)findViewById(R.id.edit_category_selector);
-        btnAction = (Button)findViewById(R.id.edit_save_btn);
-        radioGroup = (RadioGroup)findViewById(R.id.edit_radioGroup);
+    void initUi() {
+        tvTitle = findViewById(R.id.title);
+        descriptionInput = findViewById(R.id.edit_description_input);
+        picker1 = findViewById(R.id.edit_hour_picker);
+        picker2 = findViewById(R.id.edit_day_picker);
+        picker3 = findViewById(R.id.edit_month_picker);
+        categorySelector = findViewById(R.id.edit_category_selector);
+        btnAction = findViewById(R.id.edit_save_btn);
+        radioGroup = findViewById(R.id.edit_radioGroup);
 
-        categorySelector.setAdapter(MainActivity.categoryAdapter);
+        categorySelector.setAdapter(categoryAdapter);
 
         picker1.setMinValue(0);
         picker1.setMaxValue(23);
@@ -107,20 +109,20 @@ public class EditItemActivity extends AppCompatActivity {
 
         //Set content information
         intent = getIntent();
-        editItemIndex = intent.getIntExtra("EDIT_ITEM_INDEX",0);
+        editItemIndex = intent.getIntExtra(MainActivity.KEY_EDIT_ITEM_INDEX, 0);
         bundle = intent.getExtras();
-        item = (ItemModel) bundle.getSerializable("EDIT_ITEM");
+        item = (Item) bundle.getSerializable(MainActivity.KEY_EDIT_ITEM);
         descriptionInput.setText(item.mDescription);
         tvTitle.setText(item.mName);
         picker1.setValue(item.mHour);
         picker2.setValue(item.mDay);
         picker3.setValue(item.mMonth);
-        checkedButton = (RadioButton)radioGroup.getChildAt(item.mPriorityLevel);
+        checkedButton = (RadioButton) radioGroup.getChildAt(item.mPriorityLevel);
         checkedButton.setChecked(true);
-        categorySelector.setSelection(MainActivity.categoryAdapter.getPosition(item.mCategory));
+        categorySelector.setSelection(categoryAdapter.getPosition(item.mCategory));
 
 
-        action = 0;
+        action = ACTION_VIEW;
         descriptionInput.setEnabled(false);
         picker1.setEnabled(false);
         picker2.setEnabled(false);

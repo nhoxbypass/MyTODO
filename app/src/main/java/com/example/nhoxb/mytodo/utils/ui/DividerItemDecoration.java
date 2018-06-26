@@ -1,4 +1,4 @@
-package com.example.nhoxb.mytodo;
+package com.example.nhoxb.mytodo.utils.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
