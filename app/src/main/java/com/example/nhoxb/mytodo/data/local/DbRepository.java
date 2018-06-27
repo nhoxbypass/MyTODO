@@ -19,6 +19,8 @@ public class DbRepository implements DbDataSource {
 
     @Override
     public void insertItem(Item item) {
+        if (item.getId() == -1)
+            item.setId(dbOpenHelper.getNextAvailableItemId());
         dbOpenHelper.insertItem(item);
     }
 

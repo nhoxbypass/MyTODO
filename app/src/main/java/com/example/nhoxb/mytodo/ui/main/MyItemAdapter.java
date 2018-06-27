@@ -1,4 +1,4 @@
-package com.example.nhoxb.mytodo.ui.base;
+package com.example.nhoxb.mytodo.ui.main;
 
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;

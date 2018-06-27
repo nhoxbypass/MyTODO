@@ -18,8 +18,8 @@ import java.util.List;
  */
 public class DbOpenHelper extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "MyTODODatabase.db";
-    public static final String TABLE_NAME = "items";
+    private static final String DATABASE_NAME = "MyTODODatabase.db";
+    private static final String TABLE_NAME = "items";
 
     private static final String KEY_ID = "id";
     private static final String KEY_NAME = "name";
@@ -29,7 +29,7 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     private static final String KEY_HOUR = "hour";
     private static final String KEY_DAY = "day";
     private static final String KEY_MONTH = "month";
-    private static final String DB_CREATE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" + KEY_ID + " INTEGER," + KEY_NAME + " VARCHAR, " + KEY_DESCRIPTION + " VARCHAR, " + KEY_CATEGORY + " VARCHAR," + KEY_PRIORITY + " INTEGER," + KEY_HOUR + " INTEGER," + KEY_DAY + " INTEGER," + KEY_MONTH + " INTEGER);";
+
     //For upgrate database when structure change
     public static int DATA_VERSION = 1;
     //Singleton pattern
@@ -55,7 +55,15 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         db = sqLiteDatabase;
-        sqLiteDatabase.execSQL(DB_CREATE);
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "("
+                + KEY_ID + " INTEGER,"
+                + KEY_NAME + " VARCHAR, "
+                + KEY_DESCRIPTION + " VARCHAR, "
+                + KEY_CATEGORY + " VARCHAR,"
+                + KEY_PRIORITY + " INTEGER,"
+                + KEY_HOUR + " INTEGER,"
+                + KEY_DAY + " INTEGER,"
+                + KEY_MONTH + " INTEGER);");
     }
 
     public Cursor query(String sql) {
@@ -75,8 +83,9 @@ public class DbOpenHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public int getNextItemId() {
-        Cursor c = query("SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = (SELECT MAX(" + KEY_ID + ") FROM " + TABLE_NAME + ");");
+    public int getNextAvailableItemId() {
+        Cursor c = query("SELECT * FROM " + TABLE_NAME
+                + " WHERE " + KEY_ID + " = (SELECT MAX(" + KEY_ID + ") FROM " + TABLE_NAME + ");");
 
         int id;
 
@@ -90,9 +99,6 @@ public class DbOpenHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertItem(int id, String name, String description, String category, int priority, int hour, int day, int month) {
-
-        /*db.execSQL("INSERT INTO items VALUES('"+name+"','"+
-                category+"',"+priority+","+ hour +","+ day +","+ month +");"); */
         db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();

@@ -1,6 +1,5 @@
 package com.example.nhoxb.mytodo.ui.edit;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -33,7 +32,6 @@ public class EditItemActivity extends AppCompatActivity {
     Button btnAction;
     ArrayAdapter categoryAdapter;
     Bundle bundle;
-    Intent intent;
     int editItemIndex;
     int action; // 0: view, 1: edit
     Item item;
@@ -47,7 +45,7 @@ public class EditItemActivity extends AppCompatActivity {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categoryAdapter.addAll(DataUtils.getDefaultCategoryList());
 
-        initUi();
+        setupUi();
 
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,6 +53,7 @@ public class EditItemActivity extends AppCompatActivity {
                 if (action == ACTION_VIEW) {
                     //Edit
                     action = ACTION_EDIT;
+
                     descriptionInput.setEnabled(true);
                     picker1.setEnabled(true);
                     picker2.setEnabled(true);
@@ -73,10 +72,12 @@ public class EditItemActivity extends AppCompatActivity {
                     item.mHour = picker1.getValue();
                     item.mDay = picker2.getValue();
                     item.mMonth = picker3.getValue();
-                    bundle.putSerializable(KEY_RESULT_ITEM, item);
-                    intent.putExtras(bundle);
-                    setResult(RESULT_OK, intent);
+
                     btnAction.setText(R.string.edit);
+
+                    bundle.putSerializable(KEY_RESULT_ITEM, item);
+                    getIntent().putExtras(bundle);
+                    setResult(RESULT_OK);
                     finish();
                 } else {
                     // Unknown action
@@ -86,7 +87,7 @@ public class EditItemActivity extends AppCompatActivity {
 
     }
 
-    void initUi() {
+    void setupUi() {
         tvTitle = findViewById(R.id.title);
         descriptionInput = findViewById(R.id.edit_description_input);
         picker1 = findViewById(R.id.edit_hour_picker);
@@ -107,11 +108,12 @@ public class EditItemActivity extends AppCompatActivity {
         picker3.setMinValue(1);
         picker3.setMaxValue(12);
 
-        //Set content information
-        intent = getIntent();
-        editItemIndex = intent.getIntExtra(MainActivity.KEY_EDIT_ITEM_INDEX, 0);
-        bundle = intent.getExtras();
+        // Get content info
+        editItemIndex = getIntent().getIntExtra(MainActivity.KEY_EDIT_ITEM_INDEX, 0);
+        bundle = getIntent().getExtras();
         item = (Item) bundle.getSerializable(MainActivity.KEY_EDIT_ITEM);
+
+        // Update UI
         descriptionInput.setText(item.mDescription);
         tvTitle.setText(item.mName);
         picker1.setValue(item.mHour);
@@ -120,7 +122,6 @@ public class EditItemActivity extends AppCompatActivity {
         checkedButton = (RadioButton) radioGroup.getChildAt(item.mPriorityLevel);
         checkedButton.setChecked(true);
         categorySelector.setSelection(categoryAdapter.getPosition(item.mCategory));
-
 
         action = ACTION_VIEW;
         descriptionInput.setEnabled(false);

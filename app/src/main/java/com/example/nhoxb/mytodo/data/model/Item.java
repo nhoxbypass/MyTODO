@@ -23,7 +23,7 @@ public class Item implements Serializable {
 
     //Constructor
     public Item() {
-        mId = 0;
+        mId = -1;
         mName = "Unnamed";
         mPriorityLevel = 1;
         mHour = 0;

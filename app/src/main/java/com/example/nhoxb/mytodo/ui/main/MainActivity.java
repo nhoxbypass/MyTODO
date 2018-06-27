@@ -1,10 +1,11 @@
 package com.example.nhoxb.mytodo.ui.main;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +27,6 @@ import com.example.nhoxb.mytodo.MyTODOApp;
 import com.example.nhoxb.mytodo.R;
 import com.example.nhoxb.mytodo.data.DataManager;
 import com.example.nhoxb.mytodo.data.model.Item;
-import com.example.nhoxb.mytodo.ui.base.MyItemAdapter;
 import com.example.nhoxb.mytodo.ui.edit.EditItemActivity;
 import com.example.nhoxb.mytodo.ui.splash.SplashActivity;
 import com.example.nhoxb.mytodo.utils.DataUtils;
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String KEY_EDIT_ITEM = "edit_item";
     public static final String KEY_EDIT_ITEM_INDEX = "edit_item_index";
     static final int EDIT_ITEM_REQUEST = 1;
+
     public ArrayAdapter categoryAdapter;
     FloatingActionButton fabAction, fab1, fab2;
     Animation fabClose, fabOpen, rotateClockwise, rotateAntiClockwise;
@@ -74,17 +75,13 @@ public class MainActivity extends AppCompatActivity {
         }
         */
         setContentView(R.layout.activity_main);
-
-        //Load animator
-        fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
-        fabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
-        rotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
-        rotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
-
         fabAction = findViewById(R.id.fab_Action);
         fab1 = findViewById(R.id.fab1);
         fab2 = findViewById(R.id.fab2);
         recyclerView = findViewById(R.id.list_item);
+
+        //Load animator
+        setupAnimators();
 
         dataManager = MyTODOApp.getDataManager();
 
@@ -92,18 +89,44 @@ public class MainActivity extends AppCompatActivity {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categoryAdapter.addAll(DataUtils.getDefaultCategoryList());
 
-        RecyclerView.ItemDecoration itemDecoration = new
-                DividerItemDecoration(MainActivity.this);
-        recyclerView.addItemDecoration(itemDecoration);
-
         // Get extra data from intent
         Bundle extras = getIntent().getExtras();
         listItem = (List<Item>) extras.getSerializable(SplashActivity.KEY_LIST_ITEM);
         listItemAdapter = new MyItemAdapter(listItem);
-        recyclerView.setAdapter(listItemAdapter);
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(this));
         final LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(llm);
+        recyclerView.setAdapter(listItemAdapter);
 
+        setupEventListeners();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == EDIT_ITEM_REQUEST) {
+                Item item = (Item) data.getExtras().getSerializable(EditItemActivity.KEY_RESULT_ITEM);
+                if (item == null)
+                    return;
+
+                listItem.set(editItemIndex, item);
+                dataManager.updateItem(item.getId(), item);
+                listItemAdapter.notifyDataSetChanged();
+            }
+        }
+    }
+
+    private void setupAnimators() {
+        fabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fabClose = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
+        rotateClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_clockwise);
+        rotateAntiClockwise = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.rotate_anticlockwise);
+    }
+
+    private void setupEventListeners() {
         listItemAdapter.setOnItemClickListener(new MyItemAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -162,8 +185,8 @@ public class MainActivity extends AppCompatActivity {
         fab1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ViewDialog dialog = new ViewDialog();
-                dialog.showDialog(MainActivity.this);
+                ViewDialog dialog = new ViewDialog(MainActivity.this);
+                dialog.show();
                 closeFAB();
             }
         });
@@ -175,30 +198,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == EDIT_ITEM_REQUEST) {
-                Item item = (Item) data.getExtras().getSerializable(EditItemActivity.KEY_RESULT_ITEM);
-                listItem.set(editItemIndex, item);
-                dataManager.updateItem(item.getId(), item);
-                listItemAdapter.notifyDataSetChanged();
-            }
-        }
     }
 
     void openFAB() {
         fabAction.startAnimation(rotateClockwise);
         fab1.startAnimation(fabOpen);
         fab2.startAnimation(fabOpen);
-        fab1.setClickable(true);
-        fab2.setClickable(true);
+        fab1.setEnabled(true);
+        fab2.setEnabled(true);
         isFabOpen = true;
     }
 
@@ -206,14 +213,12 @@ public class MainActivity extends AppCompatActivity {
         fabAction.startAnimation(rotateAntiClockwise);
         fab1.startAnimation(fabClose);
         fab2.startAnimation(fabClose);
-        fab1.setClickable(false);
-        fab2.setClickable(false);
+        fab1.setEnabled(false);
+        fab2.setEnabled(false);
         isFabOpen = false;
     }
 
-    public class ViewDialog {
-
-        String mName;
+    public class ViewDialog extends Dialog {
         String mDescription;
         int mPriorityLevel;
         int mHour;
@@ -227,10 +232,9 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup radioGroup;
         RadioButton checkedButton;
 
-        public void showDialog(final Activity activity) {
-            final Dialog dialog = new Dialog(activity);
-
-            dialogContentInit(dialog);
+        public ViewDialog(@NonNull final Context context) {
+            super(context);
+            setupContent();
 
             dialogButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -243,27 +247,31 @@ public class MainActivity extends AppCompatActivity {
                     mMonth = picker3.getValue();
                     mCategory = categorySelector.getSelectedItem().toString();
 
-                    TitleInputDialog titleDialog = new TitleInputDialog(activity, dialog, dataManager, listItem, listItemAdapter);
+                    TitleInputDialog titleDialog = new TitleInputDialog(context, dataManager, listItem, listItemAdapter);
+                    titleDialog.setOnPositiveClickListener(new TitleInputDialog.OnPositiveClickListener() {
+                        @Override
+                        public void onPositiveClick() {
+                            dismiss();
+                        }
+                    });
+
                     titleDialog.showDialog(mDescription, mPriorityLevel, mHour, mDay, mMonth, mCategory);
                 }
             });
-
-            dialog.show();
-
         }
 
-        private void dialogContentInit(Dialog dialog) {
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(false);
-            dialog.setContentView(R.layout.add_todo_dialog);
+        private void setupContent() {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            setCancelable(false);
+            setContentView(R.layout.add_todo_dialog);
 
-            descriptionInput = dialog.findViewById(R.id.description_input);
-            picker1 = dialog.findViewById(R.id.number_picker_1);
-            picker2 = dialog.findViewById(R.id.number_picker_2);
-            picker3 = dialog.findViewById(R.id.number_picker_3);
-            categorySelector = dialog.findViewById(R.id.category_selector);
-            dialogButton = dialog.findViewById(R.id.btn_dialog);
-            radioGroup = dialog.findViewById(R.id.radioGroup);
+            descriptionInput = findViewById(R.id.description_input);
+            picker1 = findViewById(R.id.number_picker_1);
+            picker2 = findViewById(R.id.number_picker_2);
+            picker3 = findViewById(R.id.number_picker_3);
+            categorySelector = findViewById(R.id.category_selector);
+            dialogButton = findViewById(R.id.btn_dialog);
+            radioGroup = findViewById(R.id.radioGroup);
 
             ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
 

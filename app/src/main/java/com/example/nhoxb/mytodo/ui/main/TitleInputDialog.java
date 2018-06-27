@@ -1,7 +1,8 @@
 package com.example.nhoxb.mytodo.ui.main;
 
-import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -10,20 +11,18 @@ import android.widget.EditText;
 import com.example.nhoxb.mytodo.R;
 import com.example.nhoxb.mytodo.data.DataManager;
 import com.example.nhoxb.mytodo.data.model.Item;
-import com.example.nhoxb.mytodo.ui.base.MyItemAdapter;
 
 import java.util.List;
 
-public class TitleInputDialog {
-    Activity mActivity;
+public class TitleInputDialog extends Dialog {
     EditText inputField;
     Button btnYes, btnNo;
-    Dialog dialog;
 
     //
     DataManager dataManager;
     List<Item> mListItem;
     MyItemAdapter mListItemAdapter;
+    OnPositiveClickListener positiveClickListener;
 
     //
     String mName;
@@ -34,17 +33,18 @@ public class TitleInputDialog {
     int mMonth;
     String mCategory;
 
-    public TitleInputDialog(final Activity activity, final Dialog itemDialog, final DataManager dataManager, List<Item> listItem, MyItemAdapter listItemAdapter) {
-        mActivity = activity;
+    public TitleInputDialog(@NonNull final Context context, final DataManager dataManager, List<Item> listItem, MyItemAdapter listItemAdapter) {
+        super(context);
         this.dataManager = dataManager;
         mListItem = listItem;
         mListItemAdapter = listItemAdapter;
-        initDialog();
+
+        setupUi();
 
         btnYes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemDialog.dismiss();
+                positiveClickListener.onPositiveClick();
                 mName = inputField.getText().toString();
                 Item item = new Item(mName, mDescription, mPriorityLevel, mHour, mDay, mMonth, mCategory);
 
@@ -52,18 +52,20 @@ public class TitleInputDialog {
                 mListItem.add(item);
                 mListItemAdapter.notifyDataSetChanged();
 
-                dialog.dismiss();
+                dismiss();
             }
         });
 
         btnNo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dialog.dismiss();
+                dismiss();
             }
         });
+    }
 
-
+    public void setOnPositiveClickListener(OnPositiveClickListener listener) {
+        positiveClickListener = listener;
     }
 
     public void showDialog(String description, int priorityLevel, int hour, int day, int month, String category) {
@@ -74,18 +76,20 @@ public class TitleInputDialog {
         mMonth = month;
         mCategory = category;
 
-        dialog.show();
+        show();
     }
 
-    private void initDialog() {
-        dialog = new Dialog(mActivity);
+    private void setupUi() {
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setCancelable(false);
+        setContentView(R.layout.title_input_dialog);
 
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
-        dialog.setContentView(R.layout.title_input_dialog);
+        inputField = findViewById(R.id.input);
+        btnYes = findViewById(R.id.btn_dialog_yes);
+        btnNo = findViewById(R.id.btn_dialog_no);
+    }
 
-        inputField = dialog.findViewById(R.id.input);
-        btnYes = dialog.findViewById(R.id.btn_dialog_yes);
-        btnNo = dialog.findViewById(R.id.btn_dialog_no);
+    public interface OnPositiveClickListener {
+        void onPositiveClick();
     }
 }
